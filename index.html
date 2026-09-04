@@ -25,27 +25,38 @@
    TOKENS
    ============================================================ */
 :root{
-  --bg:#0a0e14;
-  --bg-alt:#0c121c;
-  --surface:#111826;
-  --surface-2:#161f2e;
-  --border:rgba(255,255,255,0.09);
-  --border-strong:rgba(255,255,255,0.16);
-  --text:#e7eef5;
-  --text-dim:#94a3b5;
-  --text-faint:#5c6a7d;
-  --accent:#00d9a3;
-  --accent-dim:#0a9d76;
-  --accent-soft:rgba(0,217,163,0.12);
-  --accent-2:#4c8dff;
-  --accent-2-soft:rgba(76,141,255,0.12);
-  --danger:#ff6b6b;
+  --bg:#ffffff;
+  --bg-alt:#f7f8fa;
+  --surface:#ffffff;
+  --surface-2:#f7f8fa;
+  --border:#e5e7eb;
+  --border-strong:#cbd5e1;
+  --text:#111827;
+  --text-dim:#64748b;
+  --text-faint:#94a3b8;
+  --accent:#2563eb;
+  --accent-dim:#1d4ed8;
+  --accent-soft:#eff6ff;
+  --accent-2:#0ea5e9;
+  --accent-2-soft:#f0f9ff;
+  --on-accent:#ffffff;
+  --danger:#dc2626;
   --radius:14px;
+  --radius-lg:20px;
   --radius-sm:8px;
   --font-display:'Space Grotesk', sans-serif;
   --font-body:'Inter', sans-serif;
   --font-mono:'JetBrains Mono', monospace;
   --maxw:1120px;
+  --shadow-soft:0 4px 20px -8px rgba(17,24,39,0.08);
+  --shadow-lift:0 20px 45px -12px rgba(17,24,39,0.16);
+
+  /* ---- decorative page-background layer only (new) ---- */
+  --bgfx-blue:rgba(37,99,235,0.07);
+  --bgfx-lavender:rgba(124,58,237,0.06);
+  --bgfx-cyan:rgba(14,165,233,0.055);
+  --bgfx-ivory:rgba(250,240,215,0.35);
+  --bgfx-dot:rgba(100,116,139,0.10);
 }
 
 *,*::before,*::after{box-sizing:border-box;}
@@ -63,6 +74,59 @@ body{
   line-height:1.6;
   -webkit-font-smoothing:antialiased;
   overflow-x:hidden;
+}
+
+/* ============================================================
+   DECORATIVE PAGE BACKGROUND (new — visual only)
+   Sits on <html> so it is painted once, fixed to the viewport,
+   and z-indexed behind every existing element. It never affects
+   layout, sizing, spacing or the colors of any component — where
+   a section already paints its own background those pixels
+   simply sit on top of this layer, unchanged.
+   ============================================================ */
+html::before,
+html::after{
+  content:'';
+  position:fixed;
+  inset:-12%;
+  z-index:-2;
+  pointer-events:none;
+}
+
+html::before{
+  background:
+    radial-gradient(640px 520px at 10% 6%,  var(--bgfx-blue), transparent 62%),
+    radial-gradient(600px 560px at 94% 14%, var(--bgfx-lavender), transparent 62%),
+    radial-gradient(680px 620px at 20% 96%, var(--bgfx-cyan), transparent 62%),
+    radial-gradient(560px 500px at 86% 90%, var(--bgfx-ivory), transparent 62%);
+  filter:blur(6px);
+  animation:bgfxDrift 46s ease-in-out infinite alternate;
+  will-change:transform;
+}
+
+html::after{
+  background-image:radial-gradient(var(--bgfx-dot) 1px, transparent 1px);
+  background-size:32px 32px;
+  -webkit-mask-image:radial-gradient(ellipse 78% 68% at 50% 28%, #000 40%, transparent 88%);
+          mask-image:radial-gradient(ellipse 78% 68% at 50% 28%, #000 40%, transparent 88%);
+  opacity:0.55;
+  z-index:-1;
+}
+
+@keyframes bgfxDrift{
+  0%   { transform:translate3d(0,0,0) scale(1); }
+  50%  { transform:translate3d(-1.4%,1.2%,0) scale(1.025); }
+  100% { transform:translate3d(1.3%,-1%,0) scale(1); }
+}
+
+@media (max-width:640px){
+  html::before{
+    background:
+      radial-gradient(380px 340px at 12% 8%,  var(--bgfx-blue), transparent 62%),
+      radial-gradient(360px 340px at 88% 92%, var(--bgfx-lavender), transparent 62%);
+    animation-duration:60s;
+  }
+  html::after{ opacity:0.35; background-size:26px 26px; }
 }
 
 img{max-width:100%;display:block;}
@@ -100,12 +164,13 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
    ============================================================ */
 header.nav{
   position:fixed;top:3px;left:0;right:0;z-index:900;
-  background:rgba(10,14,20,0.72);
+  background:rgba(255,255,255,0.75);
   backdrop-filter:blur(14px) saturate(140%);
   -webkit-backdrop-filter:blur(14px) saturate(140%);
   border-bottom:1px solid var(--border);
-  transition:background 0.3s ease, border-color 0.3s ease;
+  transition:background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
+header.nav.scrolled{box-shadow:0 6px 24px -10px rgba(17,24,39,0.10);}
 .nav-inner{
   max-width:var(--maxw);margin:0 auto;padding:16px 28px;
   display:flex;align-items:center;justify-content:space-between;
@@ -132,7 +197,7 @@ header.nav{
   border:1px solid var(--accent-dim);color:var(--accent);background:var(--accent-soft);
   transition:all 0.2s ease;white-space:nowrap;
 }
-.nav-cta:hover{background:var(--accent);color:#04140f;}
+.nav-cta:hover{background:var(--accent);color:var(--on-accent);}
 
 .hamburger{
   display:none;flex-direction:column;gap:4px;background:none;border:none;padding:8px;
@@ -144,7 +209,7 @@ header.nav{
 
 .mobile-panel{
   display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:850;
-  background:rgba(8,11,16,0.98);backdrop-filter:blur(10px);
+  background:rgba(255,255,255,0.98);backdrop-filter:blur(10px);
   flex-direction:column;align-items:center;justify-content:center;gap:6px;
   opacity:0;visibility:hidden;transition:opacity 0.25s ease;
 }
@@ -168,9 +233,9 @@ header.nav{
   border:1px solid transparent;transition:all 0.22s ease;
   white-space:nowrap;
 }
-.btn-primary{background:var(--accent);color:#04140f;}
-.btn-primary:hover{background:#12f0ba;transform:translateY(-2px);box-shadow:0 10px 30px -8px rgba(0,217,163,0.5);}
-.btn-outline{border-color:var(--border-strong);color:var(--text);background:rgba(255,255,255,0.02);}
+.btn-primary{background:var(--accent);color:var(--on-accent);}
+.btn-primary:hover{background:var(--accent-dim);transform:translateY(-2px);box-shadow:0 12px 28px -8px rgba(37,99,235,0.35);}
+.btn-outline{border-color:var(--border-strong);color:var(--text);background:rgba(28,34,38,0.02);}
 .btn-outline:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px);}
 .btn-ghost{color:var(--text-dim);padding:13px 18px;}
 .btn-ghost:hover{color:var(--text);}
@@ -211,12 +276,31 @@ section{padding:120px 0;position:relative;}
    ============================================================ */
 .hero{
   min-height:100svh;display:flex;align-items:center;position:relative;
-  padding-top:120px;overflow:hidden;
+  padding-top:120px;overflow:hidden;background:var(--bg);
 }
-.hero-bg-canvas{position:absolute;inset:0;z-index:0;opacity:0.55;}
+.hero::before,.hero::after{
+  content:'';position:absolute;z-index:0;border-radius:50%;pointer-events:none;
+  filter:blur(70px);opacity:0.5;
+  animation:blob-float 14s ease-in-out infinite;
+}
+.hero::before{
+  width:420px;height:420px;top:-10%;right:-6%;
+  background:radial-gradient(circle,rgba(37,99,235,0.16),transparent 70%);
+}
+.hero::after{
+  width:340px;height:340px;bottom:-14%;right:18%;
+  background:radial-gradient(circle,rgba(14,165,233,0.13),transparent 70%);
+  animation-delay:-7s;
+}
+@keyframes blob-float{
+  0%,100%{transform:translate(0,0) scale(1);}
+  50%{transform:translate(-18px,24px) scale(1.06);}
+}
+@media (prefers-reduced-motion: reduce){.hero::before,.hero::after{animation:none;}}
+.hero-bg-canvas{position:absolute;inset:0;z-index:0;opacity:0.14;}
 .hero-scanline{
   position:absolute;left:0;right:0;height:120px;z-index:1;pointer-events:none;
-  background:linear-gradient(180deg,transparent,rgba(0,217,163,0.08),transparent);
+  background:linear-gradient(180deg,transparent,rgba(37,99,235,0.06),transparent);
   animation:scan 7s linear infinite;
 }
 @keyframes scan{0%{top:-120px;}100%{top:100%;}}
@@ -229,7 +313,7 @@ section{padding:120px 0;position:relative;}
 .hero-badge{
   display:inline-flex;align-items:center;gap:8px;
   font-family:var(--font-mono);font-size:12.5px;color:var(--accent);
-  border:1px solid rgba(0,217,163,0.3);background:var(--accent-soft);
+  border:1px solid rgba(37,99,235,0.22);background:var(--accent-soft);
   padding:6px 14px;border-radius:100px;margin-bottom:28px;
 }
 .hero-badge .pulse{width:6px;height:6px;border-radius:50%;background:var(--accent);position:relative;}
@@ -281,22 +365,23 @@ section{padding:120px 0;position:relative;}
 .about-text p:last-child{margin-bottom:0;}
 
 .about-panel{
-  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
-  padding:28px;font-family:var(--font-mono);
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:30px;font-family:var(--font-body);box-shadow:var(--shadow-soft);
 }
 .about-panel-head{
-  display:flex;align-items:center;gap:8px;padding-bottom:16px;margin-bottom:18px;
+  display:flex;align-items:center;gap:12px;padding-bottom:18px;margin-bottom:18px;
   border-bottom:1px solid var(--border);
 }
-.about-panel-head .dot{width:10px;height:10px;border-radius:50%;}
-.about-panel-head .dot.r{background:#ff5f56;}
-.about-panel-head .dot.y{background:#ffbd2e;}
-.about-panel-head .dot.g{background:#27c93f;}
-.about-panel-head span.file{margin-left:8px;color:var(--text-faint);font-size:12px;}
-.about-field{display:flex;justify-content:space-between;gap:12px;padding:9px 0;font-size:13.5px;border-bottom:1px dashed var(--border);}
+.about-panel-icon{
+  width:34px;height:34px;border-radius:9px;background:var(--accent-soft);color:var(--accent);
+  display:flex;align-items:center;justify-content:center;flex:none;
+}
+.about-panel-icon svg{width:17px;height:17px;}
+.about-panel-head span.file{color:var(--text);font-size:14px;font-weight:600;font-family:var(--font-display);}
+.about-field{display:flex;justify-content:space-between;gap:12px;padding:10px 0;font-size:13.5px;border-bottom:1px solid var(--border);font-family:var(--font-mono);}
 .about-field:last-child{border-bottom:none;}
 .about-field .k{color:var(--text-faint);}
-.about-field .v{color:var(--text);text-align:right;}
+.about-field .v{color:var(--text);text-align:right;font-weight:500;}
 
 /* ============================================================
    SKILLS
@@ -305,9 +390,10 @@ section{padding:120px 0;position:relative;}
 @media (max-width:700px){.skills-grid{grid-template-columns:1fr;}}
 .skill-card{
   background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
-  padding:20px 22px;transition:border-color 0.25s ease, transform 0.25s ease;
+  padding:20px 22px;transition:border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+  box-shadow:var(--shadow-soft);
 }
-.skill-card:hover{border-color:var(--border-strong);transform:translateY(-2px);}
+.skill-card:hover{border-color:var(--accent);transform:translateY(-4px);box-shadow:var(--shadow-lift);}
 .skill-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px;}
 .skill-name{font-size:15px;font-weight:600;}
 .skill-pct{font-family:var(--font-mono);font-size:13px;color:var(--accent);}
@@ -322,7 +408,7 @@ section{padding:120px 0;position:relative;}
 .soft-skills{display:flex;flex-wrap:wrap;gap:10px;margin-top:36px;}
 .soft-pill{
   font-family:var(--font-mono);font-size:12.5px;color:var(--accent-2);
-  border:1px solid rgba(76,141,255,0.3);background:var(--accent-2-soft);
+  border:1px solid rgba(14,165,233,0.22);background:var(--accent-2-soft);
   padding:8px 16px;border-radius:100px;
 }
 
@@ -340,48 +426,67 @@ section{padding:120px 0;position:relative;}
   content:'';position:absolute;left:-32px;top:4px;width:13px;height:13px;border-radius:50%;
   background:var(--bg);border:2px solid var(--accent);
 }
-.tl-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px;}
+.tl-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px;box-shadow:var(--shadow-soft);}
 .tl-degree{font-size:17px;font-weight:600;margin-bottom:4px;}
 .tl-meta{font-family:var(--font-mono);font-size:13px;color:var(--text-dim);display:flex;flex-wrap:wrap;gap:6px 16px;}
 .tl-meta span{display:flex;align-items:center;gap:6px;}
 .tl-meta .sep{color:var(--text-faint);}
 
 /* ============================================================
-   CERTIFICATIONS
+   CERTIFICATIONS (elevated / highlighted treatment)
    ============================================================ */
-.cert-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
-@media (max-width:860px){.cert-grid{grid-template-columns:1fr;}}
+.cert-panel{
+  background:linear-gradient(160deg,var(--accent-soft),transparent 55%),var(--surface);
+  border:1px solid rgba(37,99,235,0.18);border-radius:calc(var(--radius) + 6px);
+  padding:32px;box-shadow:var(--shadow-soft);
+}
+.cert-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+@media (max-width:860px){.cert-grid{grid-template-columns:1fr;}.cert-panel{padding:22px;}}
 .cert-card{
+  position:relative;
   background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
-  padding:22px;transition:transform 0.25s ease, border-color 0.25s ease;
+  padding:24px 22px 22px;transition:transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  box-shadow:var(--shadow-soft);overflow:hidden;
 }
-.cert-card:hover{transform:translateY(-3px);border-color:var(--accent-dim);}
+.cert-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:4px;
+  background:linear-gradient(90deg,var(--accent),var(--accent-2));
+  opacity:0;transition:opacity 0.25s ease;
+}
+.cert-card:hover{transform:translateY(-5px);border-color:var(--accent-dim);box-shadow:var(--shadow-lift);}
+.cert-card:hover::before{opacity:1;}
 .cert-icon{
-  width:38px;height:38px;border-radius:9px;background:var(--accent-soft);
-  display:flex;align-items:center;justify-content:center;color:var(--accent);margin-bottom:16px;
+  width:44px;height:44px;border-radius:11px;
+  background:linear-gradient(135deg,var(--accent-soft),var(--accent-2-soft));
+  display:flex;align-items:center;justify-content:center;color:var(--accent);margin-bottom:18px;
 }
-.cert-icon svg{width:19px;height:19px;}
-.cert-name{font-size:15px;font-weight:600;margin-bottom:6px;line-height:1.35;}
-.cert-org{font-size:13.5px;color:var(--text-dim);margin-bottom:4px;}
-.cert-date{font-family:var(--font-mono);font-size:12px;color:var(--text-faint);}
+.cert-icon svg{width:21px;height:21px;}
+.cert-name{font-size:15.5px;font-weight:700;margin-bottom:7px;line-height:1.35;}
+.cert-org{font-size:13.5px;color:var(--text-dim);margin-bottom:10px;}
+.cert-date{
+  display:inline-flex;align-items:center;font-family:var(--font-mono);font-size:11.5px;
+  color:var(--accent-dim);background:var(--accent-soft);padding:4px 10px;border-radius:100px;
+}
 
 /* ============================================================
    PROJECTS
    ============================================================ */
 .project-card{
   background:linear-gradient(160deg,var(--surface),var(--surface-2));
-  border:1px solid var(--border);border-radius:var(--radius);
-  padding:40px;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;
+  border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:44px;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;
   position:relative;overflow:hidden;
-  transition:border-color 0.3s ease;
+  transition:border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+  box-shadow:var(--shadow-soft);
 }
-.project-card:hover{border-color:var(--accent-dim);}
+.project-card:hover{transform:translateY(-4px);}
+.project-card:hover{border-color:var(--accent-dim);box-shadow:var(--shadow-lift);}
 .project-card:hover .project-visual svg{transform:scale(1.03) translateY(-2px);}
 @media (max-width:860px){.project-card{grid-template-columns:1fr;padding:28px;gap:28px;}}
 
 .project-status{
   display:inline-flex;align-items:center;gap:7px;font-family:var(--font-mono);font-size:11.5px;
-  color:var(--accent);background:var(--accent-soft);border:1px solid rgba(0,217,163,0.3);
+  color:var(--accent);background:var(--accent-soft);border:1px solid rgba(37,99,235,0.22);
   padding:5px 12px;border-radius:100px;margin-bottom:18px;text-transform:uppercase;letter-spacing:0.04em;
 }
 .project-status .pulse{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:blink 1.4s ease-in-out infinite;}
@@ -395,7 +500,7 @@ section{padding:120px 0;position:relative;}
 
 .project-visual{
   border-radius:var(--radius-sm);border:1px solid var(--border);
-  background:radial-gradient(circle at 30% 20%, rgba(0,217,163,0.08), transparent 60%), var(--bg-alt);
+  background:radial-gradient(circle at 30% 20%, rgba(37,99,235,0.07), transparent 60%), var(--bg-alt);
   aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;overflow:hidden;
 }
 .project-visual svg{width:100%;height:100%;transition:transform 0.4s ease;}
@@ -407,9 +512,10 @@ section{padding:120px 0;position:relative;}
 .ach-item{
   display:flex;gap:18px;align-items:flex-start;
   background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
-  padding:20px 24px;transition:border-color 0.25s ease;
+  padding:20px 24px;transition:border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+  box-shadow:var(--shadow-soft);
 }
-.ach-item:hover{border-color:var(--border-strong);}
+.ach-item:hover{border-color:var(--accent);box-shadow:var(--shadow-lift);transform:translateY(-2px);}
 .ach-icon{
   flex:none;width:36px;height:36px;border-radius:9px;background:var(--accent-2-soft);
   display:flex;align-items:center;justify-content:center;color:var(--accent-2);
@@ -425,8 +531,10 @@ section{padding:120px 0;position:relative;}
 @media (max-width:768px){.contact-grid{grid-template-columns:1fr;}}
 .contact-card{
   background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
-  padding:26px;display:flex;align-items:center;gap:18px;transition:border-color 0.25s ease, transform 0.25s ease;
+  padding:26px;display:flex;align-items:center;gap:18px;transition:border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+  box-shadow:var(--shadow-soft);
 }
+.contact-card:hover{box-shadow:var(--shadow-lift);}
 .contact-card:hover{border-color:var(--accent-dim);transform:translateY(-2px);}
 .contact-icon{
   flex:none;width:46px;height:46px;border-radius:11px;background:var(--accent-soft);
@@ -463,7 +571,7 @@ footer{border-top:1px solid var(--border);padding:36px 0;}
 .back-to-top{
   width:40px;height:40px;border-radius:50%;border:1px solid var(--border);
   display:flex;align-items:center;justify-content:center;color:var(--text-dim);
-  position:fixed;bottom:28px;right:28px;background:rgba(10,14,20,0.8);backdrop-filter:blur(8px);
+  position:fixed;bottom:28px;right:28px;background:rgba(255,255,255,0.85);backdrop-filter:blur(8px);
   z-index:400;opacity:0;pointer-events:none;transform:translateY(10px);
   transition:all 0.3s ease;
 }
@@ -473,9 +581,9 @@ footer{border-top:1px solid var(--border);padding:36px 0;}
 
 /* Avatar fallback initials */
 .avatar-wrap{
-  width:112px;height:112px;border-radius:50%;overflow:hidden;border:2px solid var(--border-strong);
-  margin-bottom:24px;position:relative;background:linear-gradient(135deg,var(--surface),var(--surface-2));
-  display:flex;align-items:center;justify-content:center;
+  width:112px;height:112px;border-radius:50%;overflow:hidden;border:3px solid var(--surface);
+  margin-bottom:24px;position:relative;background:linear-gradient(135deg,var(--accent-soft),var(--accent-2-soft));
+  display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-soft),0 0 0 1px var(--border);
 }
 .avatar-wrap img{width:100%;height:100%;object-fit:cover;}
 .avatar-fallback{font-family:var(--font-display);font-size:34px;color:var(--accent);display:none;}
@@ -573,15 +681,14 @@ footer{border-top:1px solid var(--border);padding:36px 0;}
 
       <div class="about-panel reveal">
         <div class="about-panel-head">
-          <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
-          <span class="file">profile.json</span>
+          <span class="about-panel-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M8 12h8M8 8h8M8 16h5"/></svg></span>
+          <span class="file">Profile Overview</span>
         </div>
         <div class="about-field"><span class="k">location</span><span class="v">Coimbatore, Tamil Nadu</span></div>
         <div class="about-field"><span class="k">role</span><span class="v">Cybersecurity Student</span></div>
         <div class="about-field"><span class="k">status</span><span class="v">2nd Year, B.E. CSE (Cyber Security)</span></div>
         <div class="about-field"><span class="k">focus</span><span class="v">Security + Web Dev</span></div>
         <div class="about-field"><span class="k">languages</span><span class="v">English, Tamil, Malayalam</span></div>
-        <div class="about-field"><span class="k">status_code</span><span class="v" style="color:var(--accent);">200 available</span></div>
       </div>
     </div>
   </div>
@@ -650,24 +757,38 @@ footer{border-top:1px solid var(--border);padding:36px 0;}
     </div>
 
     <div class="subhead">Certifications</div>
-    <div class="cert-grid reveal-stagger">
-      <div class="cert-card">
-        <div class="cert-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2 3 6v6c0 5 3.8 9.4 9 10 5.2-.6 9-5 9-10V6l-9-4Z"/><path d="m9 12 2 2 4-4"/></svg></div>
-        <div class="cert-name">Getting Started with Cisco Packet Tracer</div>
-        <div class="cert-org">Cisco Networking Academy</div>
-        <div class="cert-date">Feb 2026</div>
-      </div>
-      <div class="cert-card">
-        <div class="cert-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2 3 6v6c0 5 3.8 9.4 9 10 5.2-.6 9-5 9-10V6l-9-4Z"/><path d="m9 12 2 2 4-4"/></svg></div>
-        <div class="cert-name">Python Course for Beginners</div>
-        <div class="cert-org">NIELIT</div>
-        <div class="cert-date">Nov 2025</div>
-      </div>
-      <div class="cert-card">
-        <div class="cert-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2 3 6v6c0 5 3.8 9.4 9 10 5.2-.6 9-5 9-10V6l-9-4Z"/><path d="m9 12 2 2 4-4"/></svg></div>
-        <div class="cert-name">Introduction to Cybersecurity</div>
-        <div class="cert-org">Cisco Networking Academy</div>
-        <div class="cert-date">&nbsp;</div>
+    <div class="cert-panel reveal">
+      <div class="cert-grid reveal-stagger">
+        <div class="cert-card">
+          <div class="cert-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2 3 6v6c0 5 3.8 9.4 9 10 5.2-.6 9-5 9-10V6l-9-4Z"/><path d="m9 12 2 2 4-4"/></svg></div>
+          <div class="cert-name">Getting Started with Cisco Packet Tracer</div>
+          <div class="cert-org">Cisco Networking Academy</div>
+          <div class="cert-date">Feb 2026</div>
+        </div>
+        <div class="cert-card">
+          <div class="cert-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2 3 6v6c0 5 3.8 9.4 9 10 5.2-.6 9-5 9-10V6l-9-4Z"/><path d="m9 12 2 2 4-4"/></svg></div>
+          <div class="cert-name">Python Course for Beginners</div>
+          <div class="cert-org">NIELIT</div>
+          <div class="cert-date">Nov 2025</div>
+        </div>
+        <div class="cert-card">
+          <div class="cert-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2 3 6v6c0 5 3.8 9.4 9 10 5.2-.6 9-5 9-10V6l-9-4Z"/><path d="m9 12 2 2 4-4"/></svg></div>
+          <div class="cert-name">Introduction to Cybersecurity</div>
+          <div class="cert-org">Cisco Networking Academy</div>
+          <div class="cert-date">&nbsp;</div>
+        </div>
+        <div class="cert-card">
+          <div class="cert-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2 3 6v6c0 5 3.8 9.4 9 10 5.2-.6 9-5 9-10V6l-9-4Z"/><path d="m9 12 2 2 4-4"/></svg></div>
+          <div class="cert-name">Artificial Intelligence Fundamentals</div>
+          <div class="cert-org">IBM SkillsBuild</div>
+          <div class="cert-date">&nbsp;</div>
+        </div>
+        <div class="cert-card">
+          <div class="cert-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2 3 6v6c0 5 3.8 9.4 9 10 5.2-.6 9-5 9-10V6l-9-4Z"/><path d="m9 12 2 2 4-4"/></svg></div>
+          <div class="cert-name">Lifelong Professional Skills</div>
+          <div class="cert-org">IBM SkillsBuild</div>
+          <div class="cert-date">&nbsp;</div>
+        </div>
       </div>
     </div>
   </div>
@@ -834,12 +955,14 @@ footer{border-top:1px solid var(--border);padding:36px 0;}
 (function(){
   const progress = document.getElementById('scroll-progress');
   const backToTop = document.getElementById('back-to-top');
+  const nav = document.querySelector('header.nav');
   function onScroll(){
     const scrollTop = window.scrollY;
     const docHeight = document.documentElement.scrollHeight - window.innerHeight;
     const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
     progress.style.width = pct + '%';
     backToTop.classList.toggle('show', scrollTop > 500);
+    if(nav) nav.classList.toggle('scrolled', scrollTop > 12);
   }
   window.addEventListener('scroll', onScroll, {passive:true});
   onScroll();
@@ -1037,7 +1160,7 @@ document.getElementById('year').textContent = new Date().getFullYear();
         const d = Math.sqrt(dx*dx+dy*dy);
         if(d < dist){
           const alpha = (1 - d/dist) * 0.35;
-          ctx.strokeStyle = `rgba(0,217,163,${alpha})`;
+          ctx.strokeStyle = `rgba(37,99,235,${alpha})`;
           ctx.lineWidth = devicePixelRatio*0.6;
           ctx.beginPath();
           ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y);
@@ -1049,7 +1172,7 @@ document.getElementById('year').textContent = new Date().getFullYear();
     for(const n of nodes){
       ctx.beginPath();
       ctx.arc(n.x, n.y, n.r, 0, Math.PI*2);
-      ctx.fillStyle = 'rgba(76,141,255,0.55)';
+      ctx.fillStyle = 'rgba(14,165,233,0.45)';
       ctx.fill();
     }
 
